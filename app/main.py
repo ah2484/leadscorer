@@ -1,6 +1,7 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Dict, Optional
 import asyncio
@@ -15,6 +16,19 @@ from .csv_processor import CSVProcessor
 from .progress_tracker import progress_tracker
 
 app = FastAPI(title="Lead Scorer", version="1.0.1")
+
+# Add CORS middleware for frontend access
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",  # Local Next.js development
+        "https://*.vercel.app",   # Vercel deployments
+        "*"  # Allow all origins (configure more strictly in production)
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 processor = CSVProcessor()
 
