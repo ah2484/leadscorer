@@ -1,0 +1,21 @@
+{
+  "name": "lead-scorer",
+  "version": "1.0.0",
+  "description": "Lead scoring application for e-commerce and B2B companies",
+  "scripts": {
+    "dev": "python3 run.py",
+    "deploy": "vercel",
+    "deploy-prod": "vercel --prod"
+  },
+  "keywords": [
+    "lead-scoring",
+    "sales",
+    "e-commerce",
+    "b2b"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "vercel": "^32.0.0"
+  }
+}
