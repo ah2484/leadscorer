@@ -619,5 +619,6 @@ async def download_results(session_id: str):
         filename=f'lead_scores_{session_id}.csv'
     )
 
-# Handler for Vercel
-handler = app
+# Handler for Vercel - use Mangum adapter for ASGI
+from mangum import Mangum
+handler = Mangum(app, lifespan="off")
