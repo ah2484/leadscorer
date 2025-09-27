@@ -14,6 +14,7 @@ import traceback
 
 from .csv_processor import CSVProcessor
 from .progress_tracker import progress_tracker
+from .api_routes import router as api_router
 
 app = FastAPI(title="Lead Scorer", version="1.0.1")
 
@@ -29,6 +30,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include the API routes
+app.include_router(api_router)
 
 processor = CSVProcessor()
 
@@ -455,8 +459,8 @@ async def root():
 
                 document.getElementById('domain-count').textContent = count + ' domain' + (count !== 1 ? 's' : '');
 
-                if (count > 2000) {
-                    document.getElementById('domain-count').textContent += ' (Only first 2000 will be processed)';
+                if (count > 4000) {
+                    document.getElementById('domain-count').textContent += ' (Only first 4000 will be processed)';
                     document.getElementById('domain-count').style.color = '#fc8181';
                 } else {
                     document.getElementById('domain-count').style.color = '#667eea';

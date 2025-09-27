@@ -8,6 +8,7 @@ import os
 from .storeleads_client import StoreLeadsClient
 from .companyenrich_client import CompanyEnrichClient
 from .lead_scorer import LeadScorer
+from .scoring_utils import should_use_companyenrich
 
 class CSVProcessor:
     def __init__(self):
@@ -67,10 +68,10 @@ class CSVProcessor:
 
             websites = [str(w).strip() for w in websites if pd.notna(w) and str(w).strip()]
 
-            # Cap at 2000 domains
-            if len(websites) > 2000:
-                print(f"Warning: Input contains {len(websites)} domains. Limiting to first 2000.")
-                websites = websites[:2000]
+            # Cap at 4000 domains
+            if len(websites) > 4000:
+                print(f"Warning: Input contains {len(websites)} domains. Limiting to first 4000.")
+                websites = websites[:4000]
 
             return websites
         except Exception as e:
@@ -110,13 +111,13 @@ class CSVProcessor:
         storeleads_results = await self.storeleads_client.fetch_multiple_domains(websites, progress_callback=storeleads_progress)
         pbar.close()
 
-        # Collect domains that didn't have data in Store Leads
+        # Collect domains that need CompanyEnrich fallback
         failed_domains = []
         final_results = []
 
         for result in storeleads_results:
-            if not result['success'] or (result.get('data', {}).get('estimated_sales_yearly', 0) == 0 and
-                                          result.get('data', {}).get('employee_count', 0) == 0):
+            # Use the same logic as API to determine if we need CompanyEnrich
+            if should_use_companyenrich(result):
                 failed_domains.append(result['domain'])
                 final_results.append(result)  # Keep for now, will replace if CompanyEnrich has data
             else:
