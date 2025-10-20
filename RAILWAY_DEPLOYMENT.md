@@ -1,145 +1,123 @@
-# Railway + Vercel Deployment Guide
+# Deploy to Railway - Step by Step
 
-This guide will help you deploy your Lead Scorer application with:
-- **Python Backend** on Railway (free tier available)
-- **Next.js Frontend** on Vercel
+Railway CLI is already installed! Follow these simple steps to deploy your API:
 
-## Part 1: Deploy Python Backend to Railway
+## Step 1: Login to Railway
 
-### Prerequisites
-- Railway account (sign up at https://railway.app)
-- GitHub repository (already set up: https://github.com/ah2484/leadscorer)
-
-### Steps to Deploy on Railway
-
-1. **Login to Railway**
-   - Go to https://railway.app
-   - Sign in with GitHub
-
-2. **Create New Project**
-   - Click "New Project"
-   - Select "Deploy from GitHub repo"
-   - Choose your repository: `ah2484/leadscorer`
-
-3. **Configure Environment Variables**
-   In Railway dashboard, add these variables:
-   ```
-   STORELEADS_API_KEY=your_storeleads_api_key
-   COMPANYENRICH_API_KEY=your_companyenrich_api_key
-   PORT=8000
-   ```
-
-4. **Deploy**
-   - Railway will automatically detect the Procfile and start deployment
-   - Once deployed, click on the deployment
-   - Go to Settings → Domains
-   - Click "Generate Domain" to get your API URL
-   - Your backend will be available at something like: `https://lead-scorer-production.up.railway.app`
-
-## Part 2: Create Next.js Frontend
-
-Since the create-next-app command requires interactive input, please run this manually:
+Run this command in your terminal:
 
 ```bash
-cd "/Users/adityaharipurkar/Documents/lead scorer"
-
-# Create Next.js app
-npx create-next-app@latest lead-scorer-frontend \
-  --typescript \
-  --tailwind \
-  --app \
-  --no-src-dir \
-  --import-alias "@/*"
-
-# When prompted:
-# - ESLint: Yes
-# - Turbopack: No (or Yes if you prefer)
-
-cd lead-scorer-frontend
+cd ~/Documents/leadscorer
+railway login
 ```
 
-## Part 3: Setup Next.js Frontend Code
+This will open your browser to authenticate. Once done, come back to the terminal.
 
-Once you've created the Next.js app, I'll provide you with:
-1. The frontend components
-2. API integration code
-3. Environment configuration
-4. Deployment instructions for Vercel
+## Step 2: Initialize Railway Project
 
-## Part 4: Important Files Already Created
-
-Your Python backend is ready with:
-- ✅ CORS configuration added to `app/main.py`
-- ✅ Procfile for Railway deployment
-- ✅ All Python dependencies in `requirements.txt`
-
-## Quick Start Commands
-
-### For Python Backend (Railway):
 ```bash
-# Push to GitHub (already done)
-git add .
-git commit -m "Add Railway deployment configuration"
-git push
-
-# Then deploy via Railway dashboard
+railway init
 ```
 
-### For Next.js Frontend (after creation):
+This will ask you to:
+- Create a new project or link to existing one
+- Give your project a name (e.g., "leadscorer-api")
+
+## Step 3: Add Environment Variables
+
+Add your API keys to Railway:
+
 ```bash
-# Install dependencies
-npm install axios
-
-# Create .env.local
-echo "NEXT_PUBLIC_API_URL=https://your-railway-url.railway.app" > .env.local
-
-# Run locally
-npm run dev
-
-# Deploy to Vercel
-npx vercel
+railway variables set STORELEADS_API_KEY=cd1dea52-b90e-43f9-57ca-124ee96c
+railway variables set COMPANYENRICH_API_KEY=EcNCU9WhvsiqGOdsdwoFEG
+railway variables set API_RATE_LIMIT=5
 ```
 
-## Architecture Overview
+## Step 4: Deploy!
 
-```
-┌─────────────────┐         ┌─────────────────┐
-│                 │         │                 │
-│  Next.js App    │  ──────▶│  Python API     │
-│  (Vercel)       │   HTTP  │  (Railway)      │
-│                 │         │                 │
-└─────────────────┘         └─────────────────┘
-                                    │
-                                    ▼
-                            ┌───────────────┐
-                            │               │
-                            │  External APIs │
-                            │  - StoreLeads │
-                            │  - CompanyEnrich│
-                            │               │
-                            └───────────────┘
+```bash
+railway up
 ```
 
-## Next Steps
+That's it! Railway will:
+1. Detect it's a Python project
+2. Install dependencies from `api_requirements.txt`
+3. Start your API with uvicorn
+4. Give you a public URL
 
-1. **Deploy Python to Railway** (follow Part 1)
-2. **Create Next.js app** (run the command in Part 2)
-3. **Let me know when ready** and I'll provide the frontend code
-4. **Deploy frontend to Vercel**
+## Step 5: Get Your URL
 
-## Benefits of This Approach
+After deployment completes, get your public URL:
 
-- ✅ Full WebSocket support on Railway
-- ✅ No timeout limitations
-- ✅ Scalable architecture
-- ✅ Free tiers available on both platforms
-- ✅ Easy to maintain and update
-- ✅ Production-ready setup
+```bash
+railway domain
+```
 
-## Need Help?
+This will show your API URL (e.g., `https://leadscorer-api-production.up.railway.app`)
 
-Once you've:
-1. Deployed the Python backend to Railway and have the URL
-2. Created the Next.js app
+## Testing Your Deployed API
 
-Let me know and I'll provide the complete frontend code to connect everything together!
+Once deployed, test with:
+
+```bash
+# Replace with your Railway URL
+API_URL="https://your-project.up.railway.app"
+
+# Health check
+curl "$API_URL/health"
+
+# Score a domain
+curl "$API_URL/score?domain=shopify.com"
+```
+
+## Quick Reference Commands
+
+```bash
+# View logs
+railway logs
+
+# Open dashboard
+railway open
+
+# Add more environment variables
+railway variables set KEY=value
+
+# Redeploy
+railway up
+
+# Check status
+railway status
+```
+
+## What Railway Will Deploy
+
+Railway will use these files:
+- **api_wrapper.py** - Your FastAPI application
+- **api_requirements.txt** - Python dependencies
+- **app/** directory - Your scoring logic and API clients
+
+Railway automatically detects:
+- Python version
+- Start command: `uvicorn api_wrapper:app --host 0.0.0.0 --port $PORT`
+- Required packages from requirements.txt
+
+## Costs
+
+Railway offers:
+- **$5/month free credit** for new accounts
+- Enough for moderate API usage
+- ~500 hours of usage per month
+
+---
+
+**Ready to deploy?** Just run:
+```bash
+cd ~/Documents/leadscorer
+railway login
+railway init
+railway variables set STORELEADS_API_KEY=cd1dea52-b90e-43f9-57ca-124ee96c
+railway variables set COMPANYENRICH_API_KEY=EcNCU9WhvsiqGOdsdwoFEG
+railway up
+```
+
+Your API will be live in ~2 minutes! 🚀

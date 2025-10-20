@@ -1,0 +1,17 @@
+node_modules/
+lead-scorer/
+lead-scorer-frontend/
+.git/
+.vercel/
+output/
+data/
+*.xlsx
+*.csv
+.DS_Store
+__pycache__/
+*.pyc
+.env
+.venv/
+venv/
+*.log
+.claude/
